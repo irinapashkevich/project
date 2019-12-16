@@ -238,7 +238,7 @@ tree_element *delete_tree_element (struct tree_element* root, int value)
     }
     else
     {
-        if (value>root->value)
+        if ((value>root->value) && (root->right!=NULL))
         {
             root->right=delete_tree_element(root->right, value);
             root->height=max(height(root->right), height(root->left))+1;
@@ -251,7 +251,7 @@ tree_element *delete_tree_element (struct tree_element* root, int value)
                 return right_rotate(root);
             }
         }
-        if (value<root->value)
+        if ((value<root->value) && (root->left!=NULL))
         {
             root->left=delete_tree_element(root->left, value);
             root->height=max(height(root->right), height(root->left))+1;
@@ -263,9 +263,27 @@ tree_element *delete_tree_element (struct tree_element* root, int value)
                 }
                 return left_rotate(root);
             }
+
         }
     }
     return root;
+}
+
+struct tree_element *find_element(struct tree_element* root, int a)
+{
+    if (root->value==a)
+    {
+        return root;
+    }
+    if ((root->value<a) && (root->right!=NULL))
+    {
+        return find_element(root->right, a);
+    }
+    if ((root->value>a) && (root->left!=NULL))
+    {
+        return find_element(root->left, a);
+    }
+    return NULL;
 }
 
 void print_tree (struct tree_element* root)
@@ -295,13 +313,30 @@ int main()
     cout<<endl;
     cout<<"kol-vo delete=";
     cin>>n;
+    struct tree_element* q=create_tree_element(0);
     for (int i=0; i<n; i++)
     {
        cin>>a;
-       p=delete_tree_element(p, a);
+       if (find_element(p, a)!=NULL)
+          p=delete_tree_element(p, a);
     }
     print_tree(p);
     cout<<p->height<<endl;
+    cout<<endl;
+    cout<<"find element:";
+    cin>>a;
+    q=find_element(p, a);
+    if (q!=NULL)
+    {
+        if (q->left!=NULL)
+           cout<<"left "<<q->left->value<<endl;
+        if (q->right!=NULL)
+           cout<<"right "<<q->right->value<<endl;
+        cout<<"h="<<q->height<<endl;
+    }
+    else
+        cout<<"net";
+    delete(q);
     delete_tree(p);
     return 0;
 }
